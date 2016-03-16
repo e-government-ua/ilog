@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.igov</groupId>
+    <artifactId>maven-log-plugin</artifactId>
+    <version>1.0</version>
+
+    <name>Maven plugin for igov enhancements in logging</name>
+
+    <properties>
+        <java.version>1.6</java.version>
+        <mvn.plugin.api>3.0</mvn.plugin.api>
+        <mvn.plugin.annotation>3.4</mvn.plugin.annotation>
+        <mvn.plugin.compiler>3.5.1</mvn.plugin.compiler>
+        <pmd.version>3.6</pmd.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>${mvn.plugin.api}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-annotations</artifactId>
+            <version>${mvn.plugin.annotation}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${mvn.plugin.compiler}</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+                <!-- Activate PMD for java code checking -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>${pmd.version}</version>
+                    <configuration>
+                        <rulesets>
+                            <ruleset>${project.basedir}${file.separator}java-code-rules.xml</ruleset>
+                        </rulesets>
+                        <targetJdk>${java.version}</targetJdk>
+                        <includeTests>true</includeTests>
+                        <outputEncoding>UTF-8</outputEncoding>
+                        <verbose>true</verbose>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>
