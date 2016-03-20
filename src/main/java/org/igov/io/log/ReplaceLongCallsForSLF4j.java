@@ -6,11 +6,11 @@ import org.apache.maven.plugins.annotations.Mojo;
 /**
  * Says "Hi" to the user.
  */
-@Mojo(name = "sayhi")
-public class GreetingMojo extends AbstractMojo
+@Mojo(name = "replace-long-calls")
+public class ReplaceLongCallsForSLF4j extends AbstractMojo
 {
     public void execute()
     {
-        getLog().info( "Hello, world." );
+        getLog().info( "It works." );
     }
 }

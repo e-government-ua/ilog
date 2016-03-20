@@ -1,21 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>org.igov</groupId>
-    <artifactId>maven-log-plugin</artifactId>
-    <version>1.0</version>
-
-    <name>Maven plugin for igov enhancements in logging</name>
+    <artifactId>log-plugin</artifactId>
+    <packaging>maven-plugin</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <name>ilog</name>
+    <url>https://github.com/e-government-ua/ilog</url>
 
     <properties>
-        <java.version>1.6</java.version>
-        <mvn.plugin.api>3.0</mvn.plugin.api>
+        <java.version>1.8</java.version>
+        <mvn.plugin.api>3.3.9</mvn.plugin.api>
         <mvn.plugin.annotation>3.4</mvn.plugin.annotation>
         <mvn.plugin.compiler>3.5.1</mvn.plugin.compiler>
+        <mvn.plugin>3.4</mvn.plugin>
         <pmd.version>3.6</pmd.version>
     </properties>
 
@@ -35,8 +34,25 @@
 
     <build>
         <pluginManagement>
-
             <plugins>
+                <!-- Allows to build and install our mvn plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-plugin-plugin</artifactId>
+                    <version>${mvn.plugin}</version>
+                    <configuration>
+                        <!-- see http://jira.codehaus.org/browse/MNG-5346 -->
+                        <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>mojo-descriptor</id>
+                            <goals>
+                                <goal>descriptor</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
