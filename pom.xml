@@ -16,7 +16,12 @@
         <mvn.plugin.compiler>3.5.1</mvn.plugin.compiler>
         <mvn.plugin>3.4</mvn.plugin>
         <pmd.version>3.6</pmd.version>
-        <junit.version>4.12</junit.version>
+        <commons-io.version>2.4</commons-io.version>
+        <commons-coll.version>3.2.2</commons-coll.version>
+        <java.parser.version>2.3.0</java.parser.version>
+        <testng.version>6.9.10</testng.version>
+        <jacoco.version>0.7.6.201602180812</jacoco.version>
+        <surefire.plugin.version>2.14.1</surefire.plugin.version>
     </properties>
 
     <dependencies>
@@ -31,12 +36,28 @@
             <version>${mvn.plugin.annotation}</version>
             <scope>provided</scope>
         </dependency>
-        <!-- Activate JUnit for java code testing -->
+        <!-- Util -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
         </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>${commons-coll.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.javaparser</groupId>
+            <artifactId>javaparser-core</artifactId>
+            <version>${java.parser.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -83,6 +104,40 @@
                         <includeTests>true</includeTests>
                         <outputEncoding>UTF-8</outputEncoding>
                         <verbose>true</verbose>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
+                    <executions>
+                        <execution>
+                            <id>prepare-agent</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>report</id>
+                            <phase>prepare-package</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <rules>
+                            <rule implementation="org.jacoco.maven.RuleConfiguration">
+                                <element>BUNDLE</element>
+                                <limits>
+                                    <limit implementation="org.jacoco.report.check.Limit">
+                                        <counter>INSTRUCTION</counter>
+                                        <value>COVEREDRATIO</value>
+                                        <minimum>0.85</minimum>
+                                    </limit>
+                                </limits>
+                            </rule>
+                        </rules>
                     </configuration>
                 </plugin>
             </plugins>

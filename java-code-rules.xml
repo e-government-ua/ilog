@@ -289,7 +289,7 @@
         <properties>
             <property name="xpath">
                 <value>
-                    //VariableDeclaratorId[(string-length(@Image) &lt; 3)
+                    //VariableDeclaratorId[(string-length(@Image) &lt; 2)
                     and (not (@Image='id'))
                     and (not (@Image='in'))
                     and (not (@Image='out'))]

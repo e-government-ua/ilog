@@ -1,6 +1,6 @@
 ### How to build & run [![Java version](https://img.shields.io/badge/java-8+-brightgreen.svg)](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 ```cmd
-mvn clean pmd:check install
+mvn clean pmd:check jacoco:prepare-agent package jacoco:check
 mvn org.igov:log-plugin:replace-long-calls
 ```
 
