@@ -2,7 +2,6 @@ package org.igov.io.log;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
 import java.io.File;
