@@ -1,9 +1,15 @@
 package org.igov.io.log;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.type.ReferenceType;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author  dgroup
@@ -45,7 +51,7 @@ class JavaSrcFile {
 
 
     /**
-     * Check that logger is present in the import section
+     * Check that igov logger is present in the import section
      **/
     boolean loggerFoundInImportSection() {
         return compUnit.getImports()
@@ -59,9 +65,26 @@ class JavaSrcFile {
      * Check that igov logger was defined as class member
      **/
     boolean loggerFoundInBodySection() {
-        for(TypeDeclaration type : compUnit.getTypes())
-            if (type.getMembers().stream().filter(mbr -> mbr.toString().contains("Logger LOG")).count() > 0)
-                return true;
-        return false;
+        return compUnit.getTypes()
+                .stream()
+                .filter(body ->
+                    body.toString().contains("Logger") &&
+                    body.getMembers().stream().filter(member ->{
+                        Node log = member.getChildrenNodes().iterator().next();
+                        return "Logger".equals(log.toString()) && log instanceof ReferenceType;
+                    })
+                    .count() > 0
+                ).count() > 0;
+    }
+
+    public List<BlockStmt> getBlockStatements() {
+        List<BlockStmt> blocks = new ArrayList<>();
+        for(TypeDeclaration type : getCompUnit().getTypes())
+            for(BodyDeclaration body : type.getMembers())
+                body.getChildrenNodes()
+                    .stream ()
+                    .filter (node -> node instanceof BlockStmt)
+                    .forEach(node -> blocks.add((BlockStmt) node));
+        return blocks;
     }
 }

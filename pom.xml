@@ -21,7 +21,6 @@
         <java.parser.version>2.3.0</java.parser.version>
         <testng.version>6.9.10</testng.version>
         <jacoco.version>0.7.6.201602180812</jacoco.version>
-        <surefire.plugin.version>2.14.1</surefire.plugin.version>
     </properties>
 
     <dependencies>
