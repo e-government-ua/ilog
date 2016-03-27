@@ -42,12 +42,16 @@ class CompilerUtil {
 
     static Collection<JavaSrcFile> findUsageOfIgovLogger(File root, String encoding) {
         return loadSources(root, encoding)
-                .stream()
-                .filter(JavaSrcFile::hasIgovLogger)
+                .stream ()
+                .filter (JavaSrcFile::hasIgovLogger)
                 .collect(toList());
     }
 
     static boolean logCallPresent(BlockStmt code){
+        return logCallPresent(code.toString());
+    }
+
+    static boolean logCallPresent(String code){
         return false;
     }
 }
