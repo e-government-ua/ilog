@@ -7,6 +7,8 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FileUtils.listFiles;
@@ -52,6 +54,8 @@ class CompilerUtil {
     }
 
     static boolean logCallPresent(String code){
-        return false;
+        Pattern pattern = Pattern.compile(".*(LOG|LOGGER|log|logger)\\.(debug|info|error|trace|warn)\\(.*\\)\\;.*");
+        Matcher matcher = pattern.matcher(code);
+        return matcher.matches();
     }
 }
