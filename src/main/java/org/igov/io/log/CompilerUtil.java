@@ -54,8 +54,8 @@ class CompilerUtil {
     }
 
     static boolean logCallPresent(String code){
-        Pattern pattern = Pattern.compile(".*(LOG|LOGGER|log|logger)\\.(debug|info|error|trace|warn)\\(.*\\)\\;.*");
+        Pattern pattern = Pattern.compile(".*(LOG|LOGGER|log|logger)\\s*\\.\\s*(debug|info|error|trace|warn)\\s*\\(.*\".*\".*\\)\\;.*\n?");
         Matcher matcher = pattern.matcher(code);
-        return matcher.matches();
+        return matcher.find();
     }
 }
