@@ -16,8 +16,8 @@ import static org.apache.commons.lang3.Validate.notBlank;
 import static org.apache.commons.lang3.Validate.notNull;
 
 class CompilerUtil {
-    private static final String regexp = ".*(LOG|LOGGER|log|logger)\\s*\\.\\s*(debug|info|error|trace|warn)\\s*\\(.*\".*\".*\\)\\;.*\n?";
-    private static Pattern pattern = Pattern.compile(regexp);
+    private static final String REGEXP = ".*(LOG|LOGGER|log|logger)\\s*\\.\\s*(debug|info|error|trace|warn)\\s*\\(.*\".*\".*\\)\\;.*\n?";
+    private static Pattern pattern = Pattern.compile(REGEXP);
 
     static JavaSrcFile toSourceFile(File file, String encoding) {
         try {

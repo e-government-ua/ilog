@@ -89,22 +89,22 @@ public class CompilerUtilTest {
                          "  int id = 33358;\n" +
                          "  String name = \"someName\";\n" +
                          "  log.info(\"Got name={}, id={} \", name, id);\n" +
-                         "}\n" },
+                         "}" },
                 { "false" , "public void notContainsAnyLog() {\n" +
                         "  System.out.println(\"Sorry, but I don't contain any logger:)\");\n" +
-                        "}\n" },
+                        "}" },
                 { "true" , "public void withBigLogger() {\n" +
                         "  int id = 33358;\n" +
                         "  String name = \"someName\";\n" +
                         "  LOG.trace(\"Got name={}, id={} \", name, id);\n" +
-                        "}\n" },
+                        "}" },
                 { "true" , "public void withSmallLongLogger() {\n" +
                         "  int id = 33358;\n" +
                         "  String name = \"someName\";\n" +
                         "  logger.error(\"\\ncontext info one two three: {} {} {}\", " +
                         "new Object[] {\"1\", \"2\", \"3\"}," +
                         "new Exception(\"something went wrong\"));\n" +
-                        "}\n" }
+                        "}" }
         };
     }
 }
