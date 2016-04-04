@@ -12,7 +12,7 @@ import java.util.Collection;
 import static org.igov.io.log.CompilerUtil.findUsageOfIgovLogger;
 
 
-@Mojo(name = "replaceLongCalls-long-calls")
+@Mojo(name = "replace-long-calls")
 public class ReplaceLongCallsForSLF4j extends AbstractMojo {
 
     private static final File HOME = new File(".");
@@ -36,7 +36,7 @@ public class ReplaceLongCallsForSLF4j extends AbstractMojo {
             return;
 
         for(JavaSrcFile file : srcFiles) {
-            getLog().info("Processing of " + file);
+            getLog().info("Processing: " + file);
 
             file.getBlockStatements()
                 .stream()
