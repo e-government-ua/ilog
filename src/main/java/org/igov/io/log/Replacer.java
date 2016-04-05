@@ -23,7 +23,7 @@ public class Replacer {
             try (BufferedReader bufferedReader = new BufferedReader(fileReader)) {
                 while ((temp = bufferedReader.readLine()) != null) {
                     Matcher matcher = pattern.matcher(temp);
-                    if (matcher.matches()) {
+                    if (matcher.find()) {
                         total += replace(temp);
                     } else {
                         total += temp + "\n";
