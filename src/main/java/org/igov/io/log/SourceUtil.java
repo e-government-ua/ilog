@@ -7,7 +7,6 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toList;
@@ -15,9 +14,13 @@ import static org.apache.commons.io.FileUtils.listFiles;
 import static org.apache.commons.lang3.Validate.notBlank;
 import static org.apache.commons.lang3.Validate.notNull;
 
-class CompilerUtil {
-    private static final String REGEXP = ".*(LOG|LOGGER|log|logger)\\s*\\.\\s*(debug|info|error|trace|warn)\\s*\\(.*\".*\".*\\)\\;.*\n?";
-    static Pattern pattern = Pattern.compile(REGEXP);
+class SourceUtil {
+
+    private static final String LOG_CALL_REGEXP =
+        ".*(LOG|LOGGER|log|logger)\\s*\\.\\s*(debug|info|error|trace|warn)\\s*\\(.*\".*\".*\\)\\;.*\n?";
+
+    static final Pattern LOG_CALL_PATTERN = Pattern.compile(LOG_CALL_REGEXP);
+
 
     static JavaSrcFile toSourceFile(File file, String encoding) {
         try {
@@ -55,7 +58,6 @@ class CompilerUtil {
     }
 
     static boolean logCallPresent(String code){
-        Matcher matcher = pattern.matcher(code);
-        return matcher.find();
+        return LOG_CALL_PATTERN.matcher(code).find();
     }
 }

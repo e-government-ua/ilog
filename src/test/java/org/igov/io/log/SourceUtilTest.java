@@ -20,17 +20,17 @@ import static org.testng.Assert.*;
  * @author  dgroup
  * @since   26.03.16
  */
-public class CompilerUtilTest {
+public class SourceUtilTest {
 
     @Test
     public void loadSources(){
-        Collection<JavaSrcFile> srcFiles = CompilerUtil.loadSources(TEST_SRC_ROOT, "UTF-8");
+        Collection<JavaSrcFile> srcFiles = SourceUtil.loadSources(TEST_SRC_ROOT, "UTF-8");
         assertEquals(srcFiles.size(), 3, "Some *.java file wasn't found");
     }
 
     @Test
     public void findUsageOfIgovLogger(){
-        Collection<JavaSrcFile> srcFiles = CompilerUtil.findUsageOfIgovLogger(TEST_SRC_ROOT, "UTF-8");
+        Collection<JavaSrcFile> srcFiles = SourceUtil.findUsageOfIgovLogger(TEST_SRC_ROOT, "UTF-8");
         assertEquals(srcFiles.size(), 1, "At least 1 java file contains logger");
     }
 
@@ -71,40 +71,42 @@ public class CompilerUtilTest {
         assertEquals(methods.size(), 3, "There is 3 methods in the .java class");
 
         List<BlockStmt> methodsWithIgovLogger = methods.stream()
-            .filter (CompilerUtil::logCallPresent)
+            .filter (SourceUtil::logCallPresent)
             .collect(toList());
 
         assertEquals(methodsWithIgovLogger.size(), 1, "There is 1 method with igov log");
     }
 
     @Test(dataProvider = "logs")
-    public void logCallPresentParametrized(String expected, String actual) {
-        assertEquals(String.valueOf(CompilerUtil.logCallPresent(actual)), expected);
+    public void logCallPresent(String expected, String actual) {
+        assertEquals(String.valueOf(SourceUtil.logCallPresent(actual)), expected);
     }
 
     @DataProvider(name = "logs")
-    public Object[][] prividerData() {
+    public Object[][] produce() {
         return new Object[][] {
-                { "true" , "public void containsLog() {\n" +
-                         "  int id = 33358;\n" +
-                         "  String name = \"someName\";\n" +
-                         "  log.info(\"Got name={}, id={} \", name, id);\n" +
-                         "}" },
-                { "false" , "public void notContainsAnyLog() {\n" +
+            { "true" , "public void containsLog() {\n" +
+                        "  int id = 33358;\n" +
+                        "  String name = \"someName\";\n" +
+                        "  log.info(\"Got name={}, id={} \", name, id);\n" +
+                        "}" },
+
+            { "false" , "public void notContainsAnyLog() {\n" +
                         "  System.out.println(\"Sorry, but I don't contain any logger:)\");\n" +
                         "}" },
-                { "true" , "public void withBigLogger() {\n" +
+
+            { "true" , "public void withBigLogger() {\n" +
                         "  int id = 33358;\n" +
                         "  String name = \"someName\";\n" +
                         "  LOG.trace(\"Got name={}, id={} \", name, id);\n" +
                         "}" },
-                { "true" , "public void withSmallLongLogger() {\n" +
+
+            { "true" ,  "public void withSmallLongLogger() {\n" +
                         "  int id = 33358;\n" +
                         "  String name = \"someName\";\n" +
                         "  logger.error(\"\\ncontext info one two three: {} {} {}\", " +
                         "new Object[] {\"1\", \"2\", \"3\"}," +
                         "new Exception(\"something went wrong\"));\n" +
-                        "}" }
-        };
+                        "}" }};
     }
 }

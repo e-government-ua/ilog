@@ -15,7 +15,8 @@ import java.util.regex.Pattern;
  */
 
 public class Replacer {
-    static void makeReplace(File file, Pattern pattern) {
+
+    static void replaceLogCalls(File file, Pattern pattern) {
         try  {
             FileReader fileReader = new FileReader(file);
             String temp, total = "";
@@ -23,11 +24,7 @@ public class Replacer {
             try (BufferedReader bufferedReader = new BufferedReader(fileReader)) {
                 while ((temp = bufferedReader.readLine()) != null) {
                     Matcher matcher = pattern.matcher(temp);
-                    if (matcher.find()) {
-                        total += replace(temp);
-                    } else {
-                        total += temp + "\n";
-                    }
+                    total += matcher.find()? replace(temp) : temp + "\n";
                 }
 
                 FileWriter fileWriter = new FileWriter(file);

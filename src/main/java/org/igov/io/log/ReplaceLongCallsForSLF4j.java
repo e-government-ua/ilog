@@ -6,13 +6,17 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import java.io.*;
+import java.io.File;
 import java.util.Collection;
-import java.util.regex.Pattern;
 
-import static org.igov.io.log.CompilerUtil.findUsageOfIgovLogger;
+import static org.igov.io.log.SourceUtil.LOG_CALL_PATTERN;
+import static org.igov.io.log.SourceUtil.findUsageOfIgovLogger;
+import static org.igov.io.log.Replacer.replaceLogCalls;
 
-
+/**
+ * @author  dgroup
+ * @since   26.03.16
+ */
 @Mojo(name = "replace-long-calls")
 public class ReplaceLongCallsForSLF4j extends AbstractMojo {
 
@@ -36,17 +40,9 @@ public class ReplaceLongCallsForSLF4j extends AbstractMojo {
         if (srcFiles.isEmpty())
             return;
 
-        Pattern pattern = CompilerUtil.pattern;
-
         for(JavaSrcFile file : srcFiles) {
             getLog().info("Processing: " + file);
-
-            file.getBlockStatements()
-                .stream()
-                .filter(CompilerUtil::logCallPresent)
-                .forEach(System.out::println);
-
-            Replacer.makeReplace(file.getFile(), pattern);
+            replaceLogCalls(file.getFile(), LOG_CALL_PATTERN);
         }
     }
 
