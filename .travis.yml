@@ -1,4 +1,0 @@
-language: java
-jdk:
-  - oraclejdk8
-script: mvn clean pmd:check jacoco:prepare-agent package jacoco:check jacoco:report coveralls:report
