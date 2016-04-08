@@ -1,6 +1,8 @@
 package org.igov.io.log;
 
-
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseException;
+import com.github.javaparser.ast.CompilationUnit;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,28 +17,39 @@ import java.util.regex.Pattern;
  */
 
 public class Replacer {
+    static boolean replaceLogCalls(File file, Pattern pattern) throws ParseException, IOException {
+        if (annotationFoundInSourceCode(JavaParser.parse(file))) {
+            return false;
+        } else {
+            checkFile(file, pattern);
+            return true;
+        }
+    }
 
-    static void replaceLogCalls(File file, Pattern pattern) {
-        try  {
-            FileReader fileReader = new FileReader(file);
-            String temp, total = "";
+    static boolean annotationFoundInSourceCode(CompilationUnit compUnit) {
+        return compUnit.getTypes()
+                .stream()
+                .filter(annotationDeclaration -> annotationDeclaration.getAnnotations().toString().contains("@NotAllowedReplaceLog"))
+                .count() > 0;
+    }
 
-            try (BufferedReader bufferedReader = new BufferedReader(fileReader)) {
-                while ((temp = bufferedReader.readLine()) != null) {
-                    Matcher matcher = pattern.matcher(temp);
-                    total += matcher.find()? replace(temp) : temp + "\n";
-                }
-
-                FileWriter fileWriter = new FileWriter(file);
-                fileWriter.write(total);
-                fileWriter.close();
+    static void checkFile(File file, Pattern pattern) {
+        String tempCode, totalCode = "";
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            while ((tempCode = reader.readLine()) != null) {
+                Matcher matcher = pattern.matcher(tempCode);
+                totalCode += matcher.find()? replaceLog(tempCode) : tempCode + "\n";
             }
-        } catch(IOException exc) {
+
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(totalCode);
+            fileWriter.close();
+        } catch (IOException exc) {
             exc.printStackTrace();
         }
     }
 
-    static String replace(String code) {
+    static String replaceLog(String code) {
         StringTokenizer tokenizer = new StringTokenizer(code, ",");
         String result = "";
         List<String> varList = new ArrayList<>();
@@ -69,20 +82,3 @@ public class Replacer {
         return result;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

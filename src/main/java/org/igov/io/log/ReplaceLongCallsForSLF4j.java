@@ -1,5 +1,6 @@
 package org.igov.io.log;
 
+import com.github.javaparser.ParseException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -7,11 +8,11 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 
 import static org.igov.io.log.SourceUtil.LOG_CALL_PATTERN;
 import static org.igov.io.log.SourceUtil.findUsageOfIgovLogger;
-import static org.igov.io.log.Replacer.replaceLogCalls;
 
 /**
  * @author  dgroup
@@ -42,7 +43,13 @@ public class ReplaceLongCallsForSLF4j extends AbstractMojo {
 
         for(JavaSrcFile file : srcFiles) {
             getLog().info("Processing: " + file);
-            replaceLogCalls(file.getFile(), LOG_CALL_PATTERN);
+            try {
+                Replacer.replaceLogCalls(file.getFile(), LOG_CALL_PATTERN);
+            } catch (ParseException exc) {
+                exc.printStackTrace();
+            } catch (IOException exc) {
+                exc.printStackTrace();
+            }
         }
     }
 
