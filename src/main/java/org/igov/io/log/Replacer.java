@@ -58,7 +58,7 @@ public class Replacer {
         result += (temp.substring(0, temp.length() - 1));
 
         if (tokenizer.countTokens() == 0) {
-            return result;
+            return result + ";\n";
         }
 
         while (tokenizer.hasMoreTokens()) {
