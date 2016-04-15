@@ -2,13 +2,14 @@ package org.igov.io.log;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
+import com.github.javaparser.ast.CompilationUnit;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.*;
 
 /**
  * @author  Serhiy Bogoslavsky
@@ -16,26 +17,22 @@ import static org.testng.Assert.assertEquals;
  */
 
 public class ReplacerTest {
+
+
     @Test
     public void annotationFoundInSourceCodeTest() {
-        try {
-            assertEquals(Replacer.annotationFoundInSourceCode(JavaParser
-                    .parse(new File("src/test/resources/test/src/TestSourceWithAnno.java"))), true);
-        } catch (ParseException exc) {
-            exc.printStackTrace();
-        } catch (IOException exc) {
-            exc.printStackTrace();
-        }
+        assertTrue (Replacer.annotationFoundInSourceCode(parse("src/test/resources/test/src/TestSourceWithAnno.java")));
+        assertFalse(Replacer.annotationFoundInSourceCode(parse("src/test/resources/test/src/SourceWithoutAnno.java")));
+    }
 
+    CompilationUnit parse(String path){
         try {
-            assertEquals(Replacer.annotationFoundInSourceCode(JavaParser
-                    .parse(new File("src/test/resources/test/src/SourceWithoutAnno.java"))), false);
-        } catch (ParseException exc) {
-            exc.printStackTrace();
-        } catch (IOException exc) {
-            exc.printStackTrace();
+            return JavaParser.parse(new File(path));
+        } catch (IOException| ParseException e) {
+            throw new ShitHappensException("Unable to parse a file: "+path, e);
         }
     }
+
 
     @Test(dataProvider = "logs")
     public void replaceTest(String expected, String actual) {

@@ -1,8 +1,7 @@
 package org.igov.io.log;
 
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,11 +16,12 @@ import java.util.regex.Pattern;
  */
 
 public class Replacer {
-    static boolean replaceLogCalls(File file, Pattern pattern) throws ParseException, IOException {
-        if (annotationFoundInSourceCode(JavaParser.parse(file))) {
+
+    static boolean replaceLogCalls(JavaSrcFile src, Pattern pattern) {
+        if (annotationFoundInSourceCode(src.getCompUnit())) {
             return false;
         } else {
-            checkFile(file, pattern);
+            checkFile(src.getFile(), pattern);
             return true;
         }
     }
@@ -29,10 +29,11 @@ public class Replacer {
     static boolean annotationFoundInSourceCode(CompilationUnit compUnit) {
         return compUnit.getTypes()
                 .stream()
-                .filter(annotationDeclaration -> annotationDeclaration.getAnnotations().toString().contains("@NotAllowedReplaceLog"))
+                .filter(annotationDeclaration -> annotationDeclaration.getAnnotations().toString().contains("@DoNotReplaceTheLogs"))
                 .count() > 0;
     }
 
+    // WTF ???? What?
     static void checkFile(File file, Pattern pattern) {
         String tempCode, totalCode = "";
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
