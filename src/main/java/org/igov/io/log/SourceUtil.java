@@ -26,7 +26,7 @@ class SourceUtil {
         try {
             return new JavaSrcFile(file, JavaParser.parse(file, encoding));
         } catch (ParseException|IOException e) {
-            throw new ProceccingFailureException("Unable to parse file: " + file.getPath(), e);
+            throw new ProcessingFailureException("Unable to parse file: " + file.getPath(), e);
         }
     }
 

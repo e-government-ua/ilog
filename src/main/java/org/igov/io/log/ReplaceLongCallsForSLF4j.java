@@ -7,10 +7,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 
-import static org.igov.io.log.Replacer.replaceLogCalls;
-import static org.igov.io.log.SourceUtil.LOG_CALL_PATTERN;
 import static org.igov.io.log.SourceUtil.findUsageOfIgovLogger;
 
 /**
@@ -40,13 +39,19 @@ public class ReplaceLongCallsForSLF4j extends AbstractMojo {
         if (srcFiles.isEmpty())
             return;
 
-        for(JavaSrcFile file : srcFiles) {
-            getLog().info("Processing: " + file);
-            replaceLogCalls(file, LOG_CALL_PATTERN);
+        Replacer replacer = new Replacer();
+
+        for (JavaSrcFile file : srcFiles) {
+            try {
+                getLog().info("Processing: " + file.getFile());
+
+                replacer.replaceLogCalls(file);
+
+            } catch (IOException e) {
+                getLog().error("Unable to process a file: "+file.getFile(), e);
+            }
         }
     }
-
-
 
 
     Collection<JavaSrcFile> getSrcFiles() {
@@ -61,16 +66,3 @@ public class ReplaceLongCallsForSLF4j extends AbstractMojo {
         this.encoding = encoding;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

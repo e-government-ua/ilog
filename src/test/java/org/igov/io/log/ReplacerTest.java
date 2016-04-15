@@ -36,7 +36,7 @@ public class ReplacerTest {
 
     @Test(dataProvider = "logs")
     public void replaceTest(String expected, String actual) {
-        assertEquals(Replacer.replaceLog(actual), expected);
+        assertEquals(Replacer.replaceCall(actual), expected);
     }
 
 

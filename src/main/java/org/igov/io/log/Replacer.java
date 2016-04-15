@@ -2,13 +2,16 @@ package org.igov.io.log;
 
 import com.github.javaparser.ast.CompilationUnit;
 
-import java.io.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static org.apache.commons.io.IOUtils.write;
+import static org.igov.io.log.SourceUtil.LOG_CALL_PATTERN;
 
 /**
  * @author  Serhiy Bogoslavsky
@@ -17,40 +20,36 @@ import java.util.regex.Pattern;
 
 public class Replacer {
 
-    static boolean replaceLogCalls(JavaSrcFile src, Pattern pattern) {
-        if (annotationFoundInSourceCode(src.getCompUnit())) {
-            return false;
-        } else {
-            checkFile(src.getFile(), pattern);
-            return true;
+    void replaceLogCalls(JavaSrcFile src) throws IOException {
+        if (annotationFoundInSourceCode(src.getCompUnit()))
+            return;
+
+        StringBuilder code = new StringBuilder();
+
+        for(String line : Files.readAllLines(src.getFile().toPath()))
+            if (isCallPresent(line))
+                code.append(replaceCall(line));
+            else
+                code.append(line).append('\n');
+
+        try(FileWriter file = new FileWriter(src.getFile())) {
+            write(code, file);
         }
+    }
+
+    private boolean isCallPresent(String line) {
+        return LOG_CALL_PATTERN.matcher(line).find();
     }
 
     static boolean annotationFoundInSourceCode(CompilationUnit compUnit) {
         return compUnit.getTypes()
                 .stream()
-                .filter(annotationDeclaration -> annotationDeclaration.getAnnotations().toString().contains("@DoNotReplaceTheLogs"))
+                .filter(annotationDeclaration -> annotationDeclaration.getAnnotations().toString().contains("@DoNotReplaceLogs"))
                 .count() > 0;
     }
 
-    // WTF ???? What?
-    static void checkFile(File file, Pattern pattern) {
-        String tempCode, totalCode = "";
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            while ((tempCode = reader.readLine()) != null) {
-                Matcher matcher = pattern.matcher(tempCode);
-                totalCode += matcher.find()? replaceLog(tempCode) : tempCode + "\n";
-            }
-
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(totalCode);
-            fileWriter.close();
-        } catch (IOException exc) {
-            exc.printStackTrace();
-        }
-    }
-
-    static String replaceLog(String code) {
+    // fucking hell! TODO clean it or replace via regexp replace
+    static String replaceCall(String code) {
         StringTokenizer tokenizer = new StringTokenizer(code, ",");
         String result = "";
         List<String> varList = new ArrayList<>();

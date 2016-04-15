@@ -5,8 +5,8 @@
 *.ear
 
 # Idea-related files
-/.idea
-/target
+.idea
+target
 *.iml
 *.ipr
 *.iws
