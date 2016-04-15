@@ -4,6 +4,11 @@
          xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
          xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
 
+    <!-- Disabled rules
+        - TooManyStaticImports
+        - TooManyMethods
+    -->
+
     <rule ref="rulesets/java/optimizations.xml/AvoidInstantiatingObjectsInLoops">
         <priority>5</priority>
     </rule>
@@ -229,9 +234,6 @@
     <rule ref="rulesets/java/codesize.xml/NcssConstructorCount">
         <priority>5</priority>
     </rule>
-    <rule ref="rulesets/java/codesize.xml/TooManyMethods">
-        <priority>5</priority>
-    </rule>
 
     <!-- coupling.xml -->
     <rule ref="rulesets/java/coupling.xml/CouplingBetweenObjects">
@@ -255,9 +257,6 @@
         <priority>5</priority>
     </rule>
     <rule ref="rulesets/java/imports.xml/ImportFromSamePackage">
-        <priority>5</priority>
-    </rule>
-    <rule ref="rulesets/java/imports.xml/TooManyStaticImports">
         <priority>5</priority>
     </rule>
 
