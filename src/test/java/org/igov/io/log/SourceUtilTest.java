@@ -121,7 +121,7 @@ public class SourceUtilTest {
     CompilationUnit parse(String path){
         try {
             return JavaParser.parse(new File(path));
-        } catch (IOException| ParseException e) {
+        } catch (IOException|ParseException e) {
             throw new ShitHappensException("Unable to parse a file: "+path, e);
         }
     }
@@ -140,5 +140,22 @@ public class SourceUtilTest {
                 {"log.info (\"Got  name={}, id={}\", name, id);\n", "log.info (\"Got \", name, id);"},
                 {"log.warn (\"Got  name={}, id={}\", name, id);\n", "log.warn (\"Got \", name, id);"},
                 {"log.warn (\"Got  name={}\", name);\n", "log.warn (\"Got \", name);"}};
+    }
+
+    @Test
+    public void isCallPresent(){
+        assertTrue  (SourceUtil.isCallPresent("log.     warn(\"the id is {}\", id);"));
+        assertTrue  (SourceUtil.isCallPresent("LOG.     debug(\"the id is {}\", id);"));
+        assertTrue  (SourceUtil.isCallPresent("logger.  info(\"the id is {}\", id);"));
+        assertTrue  (SourceUtil.isCallPresent("LOGGER.  trace(\"the id is {}\", id);"));
+        assertFalse (SourceUtil.isCallPresent("lg. warn(\"the id is {}\", id);"));
+    }
+}
+
+
+/** When something goes wrong */
+class ShitHappensException extends RuntimeException {
+    public ShitHappensException(String msg, Exception e) {
+        super(msg, e);
     }
 }

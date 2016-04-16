@@ -1,14 +1,12 @@
 package org.igov.io.log;
 
 import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
 
 import static org.igov.io.log.SourceUtil.findUsageOfIgovLogger;
 import static org.igov.io.log.SourceUtil.replaceLogCalls;
@@ -34,7 +32,7 @@ public class ReplaceLongCallsForSLF4j extends AbstractMojo {
 
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() {
         srcFiles = findUsageOfIgovLogger(root, encoding);
 
         if (srcFiles.isEmpty())

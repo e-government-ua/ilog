@@ -291,7 +291,8 @@
                     //VariableDeclaratorId[(string-length(@Image) &lt; 2)
                     and (not (@Image='id'))
                     and (not (@Image='in'))
-                    and (not (@Image='out'))]
+                    and (not (@Image='out'))
+                    and (not (@Image='e'))]
                     [not(ancestor::ForInit)]
                     [not((ancestor::FormalParameter) and (ancestor::TryStatement))]
                 </value>
