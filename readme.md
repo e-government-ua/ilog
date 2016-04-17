@@ -5,6 +5,30 @@ mvn clean pmd:check jacoco:prepare-agent package jacoco:check jacoco:report cove
 mvn org.igov:log-plugin:replace-long-calls
 ```
 
+### Usage
+To include replacing logs you can  execute the ilog by setting the plugin in the ```<build>``` section of your POM as shown below:
+```xml
+<project>
+    ...
+    <plugins>
+        <plugin>
+            <groupId>org.igov</groupId>
+            <artifactId>log-plugin</artifactId>
+            <version>1.0.1</version>
+            <executions>
+                <execution>
+                    <phase>process-sources</phase>
+                    <goals>
+                        <goal>replace-long-calls</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+    ...
+</project>
+```
+
 
 
 ### Development links
