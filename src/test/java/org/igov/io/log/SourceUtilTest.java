@@ -27,7 +27,7 @@ public class SourceUtilTest {
     @Test
     public void loadSources(){
         Collection<JavaSrcFile> srcFiles = SourceUtil.loadSources(TEST_SRC_ROOT, "UTF-8");
-        assertEquals(srcFiles.size(), 3, "Some *.java file wasn't found");
+        assertTrue(srcFiles.size() >= 3, "At least 3 source *.java should be present");
     }
 
     @Test
@@ -114,8 +114,8 @@ public class SourceUtilTest {
 
     @Test
     public void annotationFoundInSourceCodeTest() {
-        assertTrue (annotationFoundInSourceCode(parse("src/test/resources/test/src/TestSourceWithAnno.java")));
-        assertFalse(annotationFoundInSourceCode(parse("src/test/resources/test/src/SourceWithoutAnno.java")));
+        assertTrue (annotationFoundInSourceCode(parse(TEST_SRC_ROOT+"/skip/TestSourceWithAnno.java")));
+        assertFalse(annotationFoundInSourceCode(parse(TEST_SRC_ROOT+"/skip/SourceWithoutAnno.java")));
     }
 
     CompilationUnit parse(String path){
