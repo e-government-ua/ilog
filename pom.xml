@@ -92,21 +92,6 @@
                         <encoding>UTF-8</encoding>
                     </configuration>
                 </plugin>
-                <!-- Activate PMD for java code checking -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-pmd-plugin</artifactId>
-                    <version>${pmd.version}</version>
-                    <configuration>
-                        <rulesets>
-                            <ruleset>${project.basedir}${file.separator}java-code-rules.xml</ruleset>
-                        </rulesets>
-                        <targetJdk>${java.version}</targetJdk>
-                        <includeTests>true</includeTests>
-                        <outputEncoding>UTF-8</outputEncoding>
-                        <verbose>true</verbose>
-                    </configuration>
-                </plugin>
                 <plugin>
                     <groupId>org.eluder.coveralls</groupId>
                     <artifactId>coveralls-maven-plugin</artifactId>
@@ -151,5 +136,31 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+
+        <plugins>
+            <!-- Activate PMD for java code checking -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>${pmd.version}</version>
+                <configuration>
+                    <rulesets>
+                        <ruleset>${project.basedir}${file.separator}java-code-rules.xml</ruleset>
+                    </rulesets>
+                    <targetJdk>${java.version}</targetJdk>
+                    <includeTests>true</includeTests>
+                    <outputEncoding>UTF-8</outputEncoding>
+                    <verbose>true</verbose>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 </project>
