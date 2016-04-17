@@ -17,6 +17,7 @@ import static org.apache.commons.io.FileUtils.listFiles;
 import static org.apache.commons.io.IOUtils.write;
 import static org.apache.commons.lang3.Validate.notBlank;
 import static org.apache.commons.lang3.Validate.notNull;
+import static org.apache.commons.lang3.StringUtils.substring;
 
 class SourceUtil {
 
@@ -98,34 +99,31 @@ class SourceUtil {
     // fucking hell! TODO clean it or replace via regexp replace
     static String replaceCall(String code) {
         StringTokenizer tokenizer = new StringTokenizer(code, ",");
-        String result = "";
-        List<String> varList = new ArrayList<>();
-
-        String temp = tokenizer.nextToken();
-        result += (temp.substring(0, temp.length() - 1));
+        String token = tokenizer.nextToken();
+        String result = substring(token, 0, token.length() - 1);
 
         if (tokenizer.countTokens() == 0) {
             return result + ";\n";
         }
 
+        List<String> varList = new ArrayList<>();
         while (tokenizer.hasMoreTokens()) {
             varList.add(tokenizer.nextToken());
         }
-        temp = varList.remove(varList.size() - 1);
-        varList.add(temp.substring(0, temp.length() - 2));
+        token = varList.remove(varList.size() - 1);
+        varList.add(substring(token, 0, token.length() - 2));
 
-        Iterator<String> iterator = varList.iterator();
-        while (iterator.hasNext()) {
-            result += iterator.next() + "={},";
-        }
-        result = result.substring(0, result.length() - 1) + "\",";
-
-        iterator = varList.iterator();
-        while (iterator.hasNext()) {
-            result += iterator.next() + ",";
-        }
-        result = result.substring(0, result.length() - 1) + ");\n";
+        result = writeVarList(varList.iterator(), result, "={},", "\",");
+        result = writeVarList(varList.iterator(), result, ",", ");\n");
 
         return result;
+    }
+
+    private static String writeVarList(Iterator<String> iterator, String result, String insertStr, String endStr) {
+        String code = result;
+        while (iterator.hasNext()) {
+            code += iterator.next() + insertStr;
+        }
+        return substring(code, 0, code.length() - 1) + endStr;
     }
 }

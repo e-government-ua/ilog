@@ -15,16 +15,16 @@ public class AccessDataServiceImpl implements AccessDataService {
 
     @Override
     public String setAccessData(String sContent) {
-        LOG.info(" sContent={} sContent={}", sContent);
-        LOG. info (" sContent={} sContent={}", sContent);
-        LOG.trace (" sContent={} sContent={}", sContent);
-        LOG.    debug(" sContent={} sContent={}", sContent);
-        LOGGER.warn("( sContent={} sContent={}", sContent);
-        LOGGER .   error (   "  sContent={} sContent={}", sContent);
+        LOG.info("", sContent);
+        LOG. info ("", sContent);
+        LOG.trace ("", sContent);
+        LOG.    debug("(", sContent);
+        LOGGER.warn("(", sContent);
+        LOGGER .   error (   " ", sContent);
         //String sKey=durableBytesDataStorage.saveData(Tool.contentStringToByte(sContent));
         //String sKey=durableBytesDataStorage.saveData(sContent.getBytes());
         String sKey = durableBytesDataStorage.saveData(Tool.aData(sContent));
-        LOG.info(" sKey={} sKey={}", sKey);
+        LOG.info("", sKey);
         //log.info("(sData(check)={}) getAccessData(sKey)={} getAccessData(sKey)={}", getAccessData(sKey));
         return sKey;
     }
