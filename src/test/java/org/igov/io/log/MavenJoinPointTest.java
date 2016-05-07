@@ -14,20 +14,17 @@ import static org.testng.Assert.assertTrue;
  * @author  dgroup
  * @since   26.03.16
  */
-public class ReplaceLongCallsForSLF4jTest {
+public class MavenJoinPointTest {
     static final File TEST_SRC_ROOT = new File("src/test/resources/org/igov/src");
 
     @Test
-    public void replaceLongCalls() throws MojoExecutionException, MojoFailureException {
+    public void recursiveLoadOfSources() throws MojoExecutionException, MojoFailureException {
         assertTrue(TEST_SRC_ROOT.exists(), "Source root directory doesn't exists");
         assertTrue(TEST_SRC_ROOT.isDirectory(), "Source root file isn't a directory");
 
-        ReplaceLongCallsForSLF4j mvnPlugin = new ReplaceLongCallsForSLF4j();
-        mvnPlugin.setRoot(TEST_SRC_ROOT);
-        mvnPlugin.setEncoding("UTF-8");
-        mvnPlugin.execute();
+        MavenJoinPoint mvnPlugin = new MavenJoinPoint(TEST_SRC_ROOT, "UTF-8");
 
-        Collection<JavaSrcFile> srcFiles = mvnPlugin.getSrcFiles();
+        Collection<SrcFile> srcFiles = mvnPlugin.recursiveLoadOfSources();
         assertTrue(srcFiles.size() == 1, "At least 'ClassWithIgovLogger.java' contains logger");
     }
 }

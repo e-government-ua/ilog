@@ -5,7 +5,7 @@ package org.igov.io.log;
  * @since   26.03.16
  */
 class ProcessingFailureException extends RuntimeException {
-    ProcessingFailureException(String message, Throwable cause) {
-        super(message, cause);
+    ProcessingFailureException(String msg, Throwable cause) {
+        super(msg, cause);
     }
 }

@@ -6,49 +6,42 @@ import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ReferenceType;
+import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.apache.commons.io.IOUtils.write;
 
 /**
  * @author  dgroup
  * @since   26.03.16
  */
-class JavaSrcFile {
-    private File file;
-    private CompilationUnit compUnit;
+class SrcFile {
 
-    JavaSrcFile(File file, CompilationUnit compilationUnit) {
-        setFile(file);
-        setCompUnit(compilationUnit);
-    }
+    private final File file;
+    private final CompilationUnit compUnit;
+    private final Log log;
 
-    File getFile() {
-        return file;
-    }
-    final void setFile(File file) {
+    SrcFile(File file, CompilationUnit compilationUnit, Log log) {
         this.file = file;
+        this.compUnit = compilationUnit;
+        this.log = log;
     }
-
-    CompilationUnit getCompUnit() {
-        return compUnit;
-    }
-    final void setCompUnit(CompilationUnit compUnit) {
-        this.compUnit = compUnit;
-    }
-
 
     public String toString() {
         return "Java source file. Path " + file.getPath();
     }
 
 
-
     boolean hasIgovLogger() {
-        return loggerFoundInImportSection() && loggerFoundInBodySection();
+        return loggerFoundInImportSection() && loggerFoundInBodySection() && notIgnored();
     }
-
 
     /**
      * Check that igov logger is present in the import section
@@ -59,7 +52,6 @@ class JavaSrcFile {
                 .filter (importDeclaration -> importDeclaration.toString().contains("org.igov.io.log.Logger"))
                 .count  () > 0;
     }
-
 
     /**
      * Check that igov logger was defined as class member
@@ -77,14 +69,53 @@ class JavaSrcFile {
                 ).count() > 0;
     }
 
-    public List<BlockStmt> getBlockStatements() {
+    boolean notIgnored() {
+        return compUnit.getTypes()
+                .stream()
+                .filter(annotationDeclaration -> annotationDeclaration.getAnnotations().toString().contains("@DoNotReplaceLogs"))
+                .count() > 0;
+    }
+
+    List<BlockStmt> getBlockStatements() {
         List<BlockStmt> blocks = new ArrayList<>();
-        for(TypeDeclaration type : getCompUnit().getTypes())
+        for(TypeDeclaration type : compUnit.getTypes())
             for(BodyDeclaration body : type.getMembers())
                 body.getChildrenNodes()
                     .stream ()
                     .filter (node -> node instanceof BlockStmt)
                     .forEach(node -> blocks.add((BlockStmt) node));
         return blocks;
+    }
+
+
+    void replaceLogCalls() {
+        try {
+            log.info("Processing: " + file);
+            StringBuilder code = new StringBuilder();
+
+            for(SrcLine line : lines())
+                if (line.isLogCallPresent() && line.replaceRequired())
+                    code.append(line.replaceCall());
+                else
+                    code.append(line.getLine()).append('\n');
+
+            try(FileWriter file = new FileWriter(this.file)) {
+                write(code, file);
+            }
+
+        } catch (IOException e) {
+            log.error("Unable to process a file: "+file, e);
+        }
+    }
+
+    List<SrcLine> lines() {
+        try {
+            return Files.readAllLines( file.toPath() )
+                    .stream ()
+                    .map    (SrcLine::new)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new ProcessingFailureException("Unable to parse file: "+ file, e);
+        }
     }
 }
