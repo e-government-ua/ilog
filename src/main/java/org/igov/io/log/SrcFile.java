@@ -74,12 +74,12 @@ class SrcFile {
     }
 
     boolean notIgnored() {
-        return logged(
+        return logged(!(
             compUnit.getTypes()
                 .stream()
                 .filter(annotationDeclaration -> annotationDeclaration.getAnnotations().toString().contains("@DoNotReplaceLogs"))
-                .count() > 0,
-            "Ignored: {}", "yes", "no");
+                .count() > 0),
+            "Ignored: {}", "no", "yes");
     }
 
     private boolean logged(boolean status, String msg, String ...args) {
@@ -109,7 +109,7 @@ class SrcFile {
                 if (line.isLogCallPresent() && line.replaceRequired())
                     code.append(line.replaceCall());
                 else
-                    code.append(line.getLine()).append('\n');
+                    code.append(line.getOriginalLine()).append('\n');
 
             try(FileWriter file = new FileWriter(this.file)) {
                 write(code, file);

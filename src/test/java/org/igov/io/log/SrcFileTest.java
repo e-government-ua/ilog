@@ -3,7 +3,6 @@ package org.igov.io.log;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -25,7 +24,8 @@ public class SrcFileTest {
         SrcFile srcFile = getTestResource("ClassWithIgovLogger.java");
 
         assertTrue(srcFile.loggerFoundInImportSection(), "igov logger wasn't found in `import` section");
-        assertTrue(srcFile.loggerFoundInBodySection(), "igov logger wasn't found in as a member in class");
+        assertTrue(srcFile.loggerFoundInBodySection(), "igov logger wasn't found in `body` section");
+        assertTrue(srcFile.notIgnored(),    "igov logger should not be ignored");
         assertTrue(srcFile.hasIgovLogger(), "igov logger wasn't found as a member of class`");
     }
 

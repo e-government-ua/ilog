@@ -4,9 +4,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import static java.util.Arrays.asList;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 /**
  * @since 5/7/2016
@@ -91,6 +89,15 @@ public class SrcLineTest {
     @DataProvider(name = "for replaceRequired")
     public Object[][] forReplaceRequired() {
         return new Object[][]{
-                {true, "log.info(\"\", id, name);"}};
-        }
+                {true,  "log.info(\"\", id, name);"},
+                {false, "log.info(\"id={}, name={}\", id, name);"}};
+    }
+
+    @Test
+    public void smokeSplit(){
+
+        SrcLine line = new SrcLine("       log.info(\" ,\"2\", \"3\" \"4\", \", id, name, \"arg\")");
+
+        System.out.println(line.replaceCall());
+    }
 }
