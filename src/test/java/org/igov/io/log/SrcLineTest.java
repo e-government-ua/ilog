@@ -13,11 +13,11 @@ public class SrcLineTest {
 
     @Test
     public void core() {
-        SrcLine line = new SrcLine("       log.info(\" ,\"2\", \"3\" \"4\", \", id, name, \"arg\")");
+        SrcLine line = new SrcLine("    log.info(\"London is the capital of the \"{}\".\", id, name, \"Great Britain\")");
 
-        assertEquals("info", line.getCategory(), "Category is wrong");
-        assertEquals("", line.getMessage(), "Message is wrong");
-        assertEquals(asList("id", "name"), line.getArgs(), "Arguments is wrong");
+        assertEquals("info", line.getCategory(),                                "Category is wrong");
+        assertEquals("London is the capital of the \"{}\".", line.getMessage(), "Message is wrong");
+        assertEquals(asList("id", "name", "\"Great Britain\""), line.getArgs(), "Arguments is wrong");
         assertTrue(line.isLogCallPresent());
     }
 
