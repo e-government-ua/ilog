@@ -64,11 +64,11 @@ public class MavenJoinPoint extends AbstractMojo {
 
     SrcFile toSourceFile(File file, String encoding) {
         try {
-            log.trace("Loaded {} with '{}' encoding", file, encoding);
+            log.trace("Try to load {} with '{}' encoding", file, encoding);
             return new SrcFile(file, JavaParser.parse(file, encoding));
 
         } catch (ParseException |IOException e) {
-            throw new ProcessingFailureException("Unable to parse file: " + file.getPath(), e);
+            throw new LogReplacingFailedException("Unable to parse file: " + file.getPath(), e);
         }
     }
 }

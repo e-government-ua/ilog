@@ -76,9 +76,9 @@ class SrcFile {
     boolean notIgnored() {
         return logged(!(
             compUnit.getTypes()
-                .stream()
-                .filter(annotationDeclaration -> annotationDeclaration.getAnnotations().toString().contains("@DoNotReplaceLogs"))
-                .count() > 0),
+                .stream ()
+                .filter (type -> type.getAnnotations().toString().contains("@DoNotReplaceLogs"))
+                .count  () > 0),
             "Logger ignored: {}", "no", "yes");
     }
 
@@ -114,9 +114,12 @@ class SrcFile {
             try(FileWriter file = new FileWriter(this.file)) {
                 write(code, file);
             }
+            log.info("Done: "+ file);
 
         } catch (IOException e) {
             log.error("Unable to process a file: "+file, e);
+        } catch (LogSyntaxCompilationException e) {
+            throw new LogReplacingFailedException("Unable to replace the logs in file: "+file, e);
         }
     }
 
@@ -127,7 +130,7 @@ class SrcFile {
                     .map    (SrcLine::new)
                     .collect(Collectors.toList());
         } catch (IOException e) {
-            throw new ProcessingFailureException("Unable to parse file: "+ file, e);
+            throw new LogReplacingFailedException("Unable to parse file: "+ file, e);
         }
     }
 }

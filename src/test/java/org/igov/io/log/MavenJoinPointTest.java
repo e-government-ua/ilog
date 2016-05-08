@@ -19,12 +19,33 @@ public class MavenJoinPointTest {
 
     @Test
     public void recursiveLoadOfSources() throws MojoExecutionException, MojoFailureException {
-        assertTrue(TEST_SRC_ROOT.exists(), "Source root directory doesn't exists");
-        assertTrue(TEST_SRC_ROOT.isDirectory(), "Source root file isn't a directory");
+        assertThatDirectoryExists(TEST_SRC_ROOT);
 
         MavenJoinPoint mvnPlugin = new MavenJoinPoint(TEST_SRC_ROOT, "UTF-8");
 
         Collection<SrcFile> srcFiles = mvnPlugin.recursiveLoadOfSources();
         assertTrue(srcFiles.size() == 1, "At least 'ClassWithIgovLogger.java' contains logger");
+    }
+
+
+
+    @Test(  expectedExceptions              = LogReplacingFailedException.class,
+            expectedExceptionsMessageRegExp = "Unable to parse file: .*")
+    public void toSourceFile(){
+        File srcDir = new File("src/test/resources/org/igov/io/log/MavenJoinPoint/toSourceFile");
+        assertThatDirectoryExists(srcDir);
+        new MavenJoinPoint(srcDir, "UTF-8")
+            .recursiveLoadOfSources();
+    }
+
+
+    static void assertThatDirectoryExists(File dir){
+        assertTrue(dir.exists(), "Directory " + dir + " doesn't exists");
+        assertTrue(dir.isDirectory(), "File " + dir + " isn't a directory");
+    }
+
+    static void assertThatFileExists(File file) {
+        assertTrue(file.exists(), "File not exists: "+ file.getPath());
+        assertTrue(file.isFile(), "Entity isn't a file: "+ file.getPath());
     }
 }

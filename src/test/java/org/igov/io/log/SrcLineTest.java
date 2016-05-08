@@ -4,23 +4,31 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import static java.util.Arrays.asList;
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 /**
- * @since 5/7/2016
+ * @author  dgroup
+ * @since   5/7/2016
  */
 public class SrcLineTest {
 
     @Test
     public void core() {
-        SrcLine line = new SrcLine("    log.info(\"London is the capital of the \"{}\".\", id, name, \"Great Britain\")");
+        SrcLine line = new SrcLine(
+            "    log.info(\"Some text\", id, name);"
+        );
+        String newLine = line.replaceCall();
 
-        assertEquals("info", line.getCategory(),                                "Category is wrong");
-        assertEquals("London is the capital of the \"{}\".", line.getMessage(), "Message is wrong");
-        assertEquals(asList("id", "name", "\"Great Britain\""), line.getArgs(), "Arguments is wrong");
-        assertTrue(line.isLogCallPresent());
+        assertEquals(line.getCategory(),"info",              "Category is wrong");
+        assertEquals(line.getMessage(), "Some text",         "Message is wrong");
+        assertEquals(line.getArgs(),    asList("id", "name"),"Arguments is wrong");
+
+        assertTrue(line.replaceRequired(), "Replace required because there is no any `{}` symbols");
+        assertTrue(line.isLogCallPresent(),"Log call should be present");
+
+        assertEquals(newLine, "    log.info(\"Some text id={}, name={}\", id, name);\n", "Replace was broken");
     }
-
 
 
 
@@ -70,20 +78,20 @@ public class SrcLineTest {
 
 
 
-    @Test(dataProvider = "forReplace")
-    public void replaceTest(String expected, String actual) {
+    @Test(dataProvider = "for replaceCall")
+    public void replace(String expected, String actual) {
         SrcLine line = new SrcLine(actual);
         assertEquals(line.replaceCall(), expected);
     }
 
-    @DataProvider(name = "logs for replace")
+    @DataProvider(name = "for replaceCall")
     public Object[][] forReplace() {
         return new Object[][]{
-                {"log.trace(\"Got  name={}, id={}\", name, id);\n", "log.trace(\"Got \", name, id);"},
-                {"log.debug(\"Got  name={}, id={}\", name, id);\n", "log.debug(\"Got \", name, id);"},
-                {"log.info (\"Got  name={}, id={}\", name, id);\n", "log.info (\"Got \", name, id);"},
-                {"log.warn (\"Got  name={}, id={}\", name, id);\n", "log.warn (\"Got \", name, id);"},
-                {"log.warn (\"Got  name={}\", name);\n", "log.warn (\"Got \", name);"}};
+            {"log.trace(\"Got name={}, id={}\", name, id);\n",    "log.trace(\"Got\", name, id);"},
+            {"log.debug(\"Got name={}, id={}\", name, id);\n",    "log. debug(\"Got\", name, id);"},
+            {"log.info(\"Got name={}, id={}\", name, id);\n",     "log.info (\"Got\", name, id);"},
+            {"log.warn(\"Got name={}, id={}\", name, id);\n",     "log.warn (\"Got\", name, id);"},
+            {"log.warn(\"Got name={}\", name);\n",                "log. warn(\"Got\", name);"}};
     }
 
 
@@ -100,5 +108,13 @@ public class SrcLineTest {
         return new Object[][]{
                 {true,  "log.info(\"\", id, name);"},
                 {false, "log.info(\"id={}, name={}\", id, name);"}};
+    }
+
+
+    @Test(expectedExceptions = LogSyntaxCompilationException.class)
+    public void quotesInSlf4jArgumentsIsProhibited(){
+        new SrcLine(
+          "log.info(\" \"Quotes is prohibited!\" \",user, id, \"Unsupported parameter\");"
+        ).replaceCall();
     }
 }
