@@ -67,7 +67,8 @@ public class SrcLineTest {
 
     @Test(dataProvider = "forReplace")
     public void replaceTest(String expected, String actual) {
-        assertEquals(new SrcLine(actual).replaceCall(), expected);
+        SrcLine line = new SrcLine(actual);
+        assertEquals(line.replaceCall(), expected);
     }
 
 
@@ -87,10 +88,9 @@ public class SrcLineTest {
         assertEquals(line.replaceRequired(), expected);
     }
 
-    @DataProvider(name = "for replaceRquired")
+    @DataProvider(name = "for replaceRequired")
     public Object[][] forReplaceRequired() {
         return new Object[][]{
                 {true, "log.info(\"\", id, name);"}};
         }
 }
-

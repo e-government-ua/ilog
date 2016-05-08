@@ -61,7 +61,7 @@ public class SrcFileTest {
 
         try {
             // Create a new source file and parse it
-            return new SrcFile(file, JavaParser.parse(file), new SystemStreamLog());
+            return new SrcFile(file, JavaParser.parse(file));
 
         } catch (ParseException|IOException e) {
             throw new AssertionError("Unable to find resource: "+name, e);

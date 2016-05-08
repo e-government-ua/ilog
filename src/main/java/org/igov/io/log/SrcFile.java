@@ -6,7 +6,8 @@ import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ReferenceType;
-import org.apache.maven.plugin.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -24,14 +25,13 @@ import static org.apache.commons.io.IOUtils.write;
  */
 class SrcFile {
 
+    private final Logger log = LoggerFactory.getLogger(SrcFile.class);
     private final File file;
     private final CompilationUnit compUnit;
-    private final Log log;
 
-    SrcFile(File file, CompilationUnit compilationUnit, Log log) {
+    SrcFile(File file, CompilationUnit compilationUnit) {
         this.file = file;
         this.compUnit = compilationUnit;
-        this.log = log;
     }
 
     public String toString() {
@@ -47,17 +47,20 @@ class SrcFile {
      * Check that igov logger is present in the import section
      **/
     boolean loggerFoundInImportSection() {
-        return compUnit.getImports()
+        return logged(
+            compUnit.getImports()
                 .stream ()
                 .filter (importDeclaration -> importDeclaration.toString().contains("org.igov.io.log.Logger"))
-                .count  () > 0;
+                .count  () > 0,
+            "It was {} in import section", "found", "not found");
     }
 
     /**
      * Check that igov logger was defined as class member
      **/
     boolean loggerFoundInBodySection() {
-        return compUnit.getTypes()
+        return logged(
+            compUnit.getTypes()
                 .stream()
                 .filter(body ->
                     body.toString().contains("Logger") &&
@@ -66,15 +69,24 @@ class SrcFile {
                         return "Logger".equals(log.toString()) && log instanceof ReferenceType;
                     })
                     .count() > 0
-                ).count() > 0;
+                ).count() > 0,
+            "It was {} in body section", "found", "not found");
     }
 
     boolean notIgnored() {
-        return compUnit.getTypes()
+        return logged(
+            compUnit.getTypes()
                 .stream()
                 .filter(annotationDeclaration -> annotationDeclaration.getAnnotations().toString().contains("@DoNotReplaceLogs"))
-                .count() > 0;
+                .count() > 0,
+            "Ignored: {}", "yes", "no");
     }
+
+    private boolean logged(boolean status, String msg, String ...args) {
+        log.trace(msg, status? args[0]: args[1]);
+        return status;
+    }
+
 
     List<BlockStmt> getBlockStatements() {
         List<BlockStmt> blocks = new ArrayList<>();

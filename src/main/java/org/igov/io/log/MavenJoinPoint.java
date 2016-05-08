@@ -5,6 +5,8 @@ import com.github.javaparser.ParseException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +26,7 @@ import static org.apache.commons.lang3.Validate.notNull;
 public class MavenJoinPoint extends AbstractMojo {
 
     private static final File HOME = new File(".");
+    private final Logger log = LoggerFactory.getLogger(MavenJoinPoint.class);
 
     /** Directory which contains *.java files for recursive search */
     private File root;
@@ -61,7 +64,9 @@ public class MavenJoinPoint extends AbstractMojo {
 
     SrcFile toSourceFile(File file, String encoding) {
         try {
-            return new SrcFile(file, JavaParser.parse(file, encoding), getLog());
+            log.trace("Loaded {} with '{}' encoding", file, encoding);
+            return new SrcFile(file, JavaParser.parse(file, encoding));
+
         } catch (ParseException |IOException e) {
             throw new ProcessingFailureException("Unable to parse file: " + file.getPath(), e);
         }

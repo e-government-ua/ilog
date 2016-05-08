@@ -18,8 +18,8 @@ public class AccessDataServiceImpl implements AccessDataService {
         LOG.info("", sContent);
         LOG. info ("", sContent);
         LOG.trace ("", sContent);
-        LOG.    debug("(", sContent);
-        LOGGER.warn("(", sContent);
+        LOG.    debug("", sContent);
+        LOGGER.warn("", sContent);
         LOGGER .   error (   " ", sContent);
         //String sKey=durableBytesDataStorage.saveData(Tool.contentStringToByte(sContent));
         //String sKey=durableBytesDataStorage.saveData(sContent.getBytes());
