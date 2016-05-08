@@ -10,9 +10,10 @@ import static org.testng.Assert.*;
  * @since 5/7/2016
  */
 public class SrcLineTest {
+
     @Test
     public void core() {
-        SrcLine line = new SrcLine("log.info(\"\", id, name);");
+        SrcLine line = new SrcLine("       log.info(\" ,\"2\", \"3\" \"4\", \", id, name, \"arg\")");
 
         assertEquals("info", line.getCategory(), "Category is wrong");
         assertEquals("", line.getMessage(), "Message is wrong");
@@ -21,14 +22,7 @@ public class SrcLineTest {
     }
 
 
-    @Test
-    public void isCallPresent() {
-        assertTrue(new SrcLine("log.     warn(\"the id is {}\", id);").isLogCallPresent());
-        assertTrue(new SrcLine("LOG.     debug(\"the id is {}\", id);").isLogCallPresent());
-        assertTrue(new SrcLine("logger.  info(\"the id is {}\", id);").isLogCallPresent());
-        assertTrue(new SrcLine("LOGGER.  trace(\"the id is {}\", id);").isLogCallPresent());
-        assertFalse(new SrcLine("lg. warn(\"the id is {}\", id);").isLogCallPresent());
-    }
+
 
     @Test(dataProvider = "for isLogCallPresent")
     public void isLogCallPresent(boolean found, String code) {
@@ -60,15 +54,27 @@ public class SrcLineTest {
                         "  logger.error(\"\\ncontext info one two three: {} {} {}\", " +
                         "new Object[] {\"1\", \"2\", \"3\"}," +
                         "new Exception(\"something went wrong\"));\n" +
-                        "}"}};
+                        "}"},
+
+                {true,  "log.     warn(\"the id is {}\", id);"},
+
+                {true,  "LOG.     debug(\"the id is {}\", id);"},
+
+                {true,  "logger.  info(\"the id is {}\", id);"},
+
+                {true,  "LOGGER.  trace(\"the id is {}\", id);"},
+
+                {false, "lg. warn(\"the id is {}\", id);"}};
     }
+
+
+
 
     @Test(dataProvider = "forReplace")
     public void replaceTest(String expected, String actual) {
         SrcLine line = new SrcLine(actual);
         assertEquals(line.replaceCall(), expected);
     }
-
 
     @DataProvider(name = "logs for replace")
     public Object[][] forReplace() {
@@ -79,6 +85,9 @@ public class SrcLineTest {
                 {"log.warn (\"Got  name={}, id={}\", name, id);\n", "log.warn (\"Got \", name, id);"},
                 {"log.warn (\"Got  name={}\", name);\n", "log.warn (\"Got \", name);"}};
     }
+
+
+
 
     @Test(dataProvider = "for replaceRequired")
     public void replaceRequired(boolean expected, String srcLine) {
@@ -91,13 +100,5 @@ public class SrcLineTest {
         return new Object[][]{
                 {true,  "log.info(\"\", id, name);"},
                 {false, "log.info(\"id={}, name={}\", id, name);"}};
-    }
-
-    @Test
-    public void smokeSplit(){
-
-        SrcLine line = new SrcLine("       log.info(\" ,\"2\", \"3\" \"4\", \", id, name, \"arg\")");
-
-        System.out.println(line.replaceCall());
     }
 }

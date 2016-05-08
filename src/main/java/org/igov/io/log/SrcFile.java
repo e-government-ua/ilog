@@ -52,7 +52,7 @@ class SrcFile {
                 .stream ()
                 .filter (importDeclaration -> importDeclaration.toString().contains("org.igov.io.log.Logger"))
                 .count  () > 0,
-            "It was {} in import section", "found", "not found");
+            "Logger {} in import section", "found", "not found");
     }
 
     /**
@@ -70,7 +70,7 @@ class SrcFile {
                     })
                     .count() > 0
                 ).count() > 0,
-            "It was {} in body section", "found", "not found");
+            "Logger {} in body section", "found", "not found");
     }
 
     boolean notIgnored() {
@@ -79,7 +79,7 @@ class SrcFile {
                 .stream()
                 .filter(annotationDeclaration -> annotationDeclaration.getAnnotations().toString().contains("@DoNotReplaceLogs"))
                 .count() > 0),
-            "Ignored: {}", "no", "yes");
+            "Logger ignored: {}", "no", "yes");
     }
 
     private boolean logged(boolean status, String msg, String ...args) {
