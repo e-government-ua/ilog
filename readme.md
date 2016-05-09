@@ -28,10 +28,3 @@ To include replacing logs you can  execute the ilog by setting the plugin in the
     ...
 </project>
 ```
-
-
-
-### Development links
-- [Maven plugin dev guide](https://maven.apache.org/guides/plugin/guide-java-plugin-development.html)
-- [New plugin, habr](https://habrahabr.ru/post/205118/)
-- [Simple plugin](http://www.avajava.com/tutorials/lessons/how-do-i-create-a-hello-world-goal-for-a-maven-plugin.html?page=1)
