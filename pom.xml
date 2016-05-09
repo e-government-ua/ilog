@@ -192,14 +192,6 @@
                 <configuration>
                     <repoToken>ttiYbPGT13Yg9sglnhPVQLSxdoXYGDDif</repoToken>
                 </configuration>
-                <executions>
-                    <execution>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
