@@ -118,4 +118,12 @@ public class SrcLineTest {
           "log.info(\" \"Quotes is prohibited in message template!\" \",user, id, \"Unsupported parameter\");"
         ).replaceCall();
     }
+
+    @Test
+    public void lineToString(){
+        String codeLine = "log.debug(\"Got \", id, name);";
+        SrcLine line    = new SrcLine(codeLine);
+        assertEquals(line.getOriginalLine(), codeLine, "Original line doesn't work");
+        assertEquals(line.toString(),        codeLine, "toString method was changed");
+    }
 }
