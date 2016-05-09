@@ -80,8 +80,8 @@ class SrcLine {
         log.trace("Got `{}`", src);
 
         if (countMatches(src, "\"") > 2)
-            throw new LogSyntaxCompilationException("Too many quotes (\") in line: ["+src+"]." +
-                    " Template is: `log.debug(\"Got \", id, name);`");
+            throw new LogSyntaxCompilationFailedException("Too many quotes (\") in line: ["+src+"]." +
+                    " Template is: `log.debug(\"Some `text`\", id, name);`");
 
         List<String> args = new LinkedList<>();
 

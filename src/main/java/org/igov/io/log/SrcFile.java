@@ -118,7 +118,7 @@ class SrcFile {
 
         } catch (IOException e) {
             log.error("Unable to process a file: "+file, e);
-        } catch (LogSyntaxCompilationException e) {
+        } catch (LogSyntaxCompilationFailedException e) {
             throw new LogReplacingFailedException("Unable to replace the logs in file: "+file, e);
         }
     }

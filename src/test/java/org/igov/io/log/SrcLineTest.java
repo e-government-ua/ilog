@@ -111,10 +111,11 @@ public class SrcLineTest {
     }
 
 
-    @Test(expectedExceptions = LogSyntaxCompilationException.class)
+    @Test(  expectedExceptions              = LogSyntaxCompilationFailedException.class,
+            expectedExceptionsMessageRegExp = "Too many quotes .*")
     public void quotesInSlf4jArgumentsIsProhibited(){
         new SrcLine(
-          "log.info(\" \"Quotes is prohibited!\" \",user, id, \"Unsupported parameter\");"
+          "log.info(\" \"Quotes is prohibited in message template!\" \",user, id, \"Unsupported parameter\");"
         ).replaceCall();
     }
 }
