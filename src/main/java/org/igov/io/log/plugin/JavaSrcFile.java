@@ -1,4 +1,4 @@
-package org.igov.io.log;
+package org.igov.io.log.plugin;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;

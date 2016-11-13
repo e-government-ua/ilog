@@ -1,4 +1,4 @@
-package org.igov.io.log;
+package org.igov.io.log.plugin;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -8,8 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
-import static org.igov.io.log.SourceUtil.findUsageOfIgovLogger;
-import static org.igov.io.log.SourceUtil.replaceLogCalls;
+import static org.igov.io.log.plugin.SourceUtil.findUsageOfIgovLogger;
+import static org.igov.io.log.plugin.SourceUtil.replaceLogCalls;
 
 /**
  * @author  dgroup

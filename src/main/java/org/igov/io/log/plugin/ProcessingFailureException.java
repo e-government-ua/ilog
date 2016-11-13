@@ -1,4 +1,4 @@
-package org.igov.io.log;
+package org.igov.io.log.plugin;
 
 /**
  * @author  dgroup

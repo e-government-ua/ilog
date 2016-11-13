@@ -1,4 +1,4 @@
-package org.igov.io.log;
+package org.igov.io.log.plugin;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
@@ -15,28 +15,33 @@ import java.util.regex.Pattern;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FileUtils.listFiles;
 import static org.apache.commons.io.IOUtils.write;
+import static org.apache.commons.lang3.StringUtils.startsWith;
 import static org.apache.commons.lang3.Validate.notBlank;
 import static org.apache.commons.lang3.Validate.notNull;
 
 class SourceUtil {
 
     private static final String LOG_CALL_REGEXP =
-        ".*(LOG|LOGGER|log|logger)\\s*\\.\\s*(debug|info|error|trace|warn)\\s*\\(.*\".*\".*\\)\\;.*\n?";
+            ".*(LOG|LOGGER|log|logger)\\s*\\.\\s*(debug|info|error|trace|warn)\\s*\\(.*\".*\".*\\)\\;.*\n?";
 
     static final Pattern LOG_CALL_PATTERN = Pattern.compile(LOG_CALL_REGEXP);
+
+    private static final String PLUGIN_PACKAGE = "org.igov.io.log.plugin";
 
 
     static JavaSrcFile toSourceFile(File file, String encoding) {
         try {
             return new JavaSrcFile(file, JavaParser.parse(file, encoding));
-        } catch (ParseException|IOException e) {
+        } catch (ParseException | IOException e) {
             throw new ProcessingFailureException("Unable to parse file: " + file.getPath(), e);
         }
     }
 
 
     /**
-     * @param root is a directory which contains *.java files for recursive search
+     * @param root is a directory which contains *.java files for recursive search.
+     *             The sources with package starting with `org.igov.io.log.plugin` will be ignored
+     *
      * @return `pre-compiled` collection of all *.java files in `root` directory
      **/
     static Collection<JavaSrcFile> loadSources(File root, String encoding) {
@@ -44,24 +49,25 @@ class SourceUtil {
         notBlank(encoding, "Encoding should be isn't blank");
 
         return listFiles(root, new String[]{"java"}, true)
-                .stream ()
-                .map    (file -> toSourceFile(file, encoding))
+                .stream()
+                .map(file -> toSourceFile(file, encoding))
+                .filter(src -> !startsWith(src.getCompUnit().getPackage().getName().toString(), PLUGIN_PACKAGE))
                 .collect(toList());
     }
 
 
     static Collection<JavaSrcFile> findUsageOfIgovLogger(File root, String encoding) {
         return loadSources(root, encoding)
-                .stream ()
-                .filter (JavaSrcFile::hasIgovLogger)
+                .stream()
+                .filter(JavaSrcFile::hasIgovLogger)
                 .collect(toList());
     }
 
-    static boolean logCallPresent(BlockStmt code){
+    static boolean logCallPresent(BlockStmt code) {
         return logCallPresent(code.toString());
     }
 
-    static boolean logCallPresent(String code){
+    static boolean logCallPresent(String code) {
         return LOG_CALL_PATTERN.matcher(code).find();
     }
 
@@ -71,13 +77,13 @@ class SourceUtil {
 
         StringBuilder code = new StringBuilder();
 
-        for(String line : Files.readAllLines(src.getFile().toPath()))
+        for (String line : Files.readAllLines(src.getFile().toPath()))
             if (isCallPresent(line))
                 code.append(replaceCall(line));
             else
                 code.append(line).append('\n');
 
-        try(FileWriter file = new FileWriter(src.getFile())) {
+        try (FileWriter file = new FileWriter(src.getFile())) {
             write(code, file);
         }
     }

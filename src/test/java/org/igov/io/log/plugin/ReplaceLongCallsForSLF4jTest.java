@@ -1,4 +1,4 @@
-package org.igov.io.log;
+package org.igov.io.log.plugin;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -7,6 +7,8 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.util.Collection;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.testng.Assert.assertTrue;
 
 
@@ -28,6 +30,6 @@ public class ReplaceLongCallsForSLF4jTest {
         mvnPlugin.execute();
 
         Collection<JavaSrcFile> srcFiles = mvnPlugin.getSrcFiles();
-        assertTrue(srcFiles.size() == 1, "At least 'ClassWithIgovLogger.java' contains logger");
+        assertThat("At least 'ClassWithIgovLogger.java' contains logger", srcFiles, hasSize(1));
     }
 }

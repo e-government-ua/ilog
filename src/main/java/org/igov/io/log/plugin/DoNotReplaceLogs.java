@@ -1,4 +1,4 @@
-package org.igov.io.log;
+package org.igov.io.log.plugin;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

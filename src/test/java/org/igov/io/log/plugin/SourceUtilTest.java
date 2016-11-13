@@ -1,11 +1,11 @@
-package org.igov.io.log;
+package org.igov.io.log.plugin;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import org.testng.annotations.Test;
 import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,26 +14,29 @@ import java.util.List;
 
 import static java.io.File.separator;
 import static java.util.stream.Collectors.toList;
-import static org.igov.io.log.ReplaceLongCallsForSLF4jTest.TEST_SRC_ROOT;
-import static org.igov.io.log.SourceUtil.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.igov.io.log.plugin.ReplaceLongCallsForSLF4jTest.TEST_SRC_ROOT;
+import static org.igov.io.log.plugin.SourceUtil.annotationFoundInSourceCode;
+import static org.igov.io.log.plugin.SourceUtil.replaceCall;
 import static org.testng.Assert.*;
 
 /**
- * @author  dgroup
- * @since   26.03.16
+ * @author dgroup
+ * @since 26.03.16
  */
 public class SourceUtilTest {
 
     @Test
-    public void loadSources(){
+    public void loadSources() {
         Collection<JavaSrcFile> srcFiles = SourceUtil.loadSources(TEST_SRC_ROOT, "UTF-8");
-        assertTrue(srcFiles.size() >= 3, "At least 3 source *.java should be present");
+        assertThat("At least 5 source *.java are located in the test directory", srcFiles, hasSize(5));
     }
 
     @Test
-    public void findUsageOfIgovLogger(){
+    public void findUsageOfIgovLogger() {
         Collection<JavaSrcFile> srcFiles = SourceUtil.findUsageOfIgovLogger(TEST_SRC_ROOT, "UTF-8");
-        assertEquals(srcFiles.size(), 1, "At least 1 java file contains logger");
+        assertThat("At least 1 java file contains logger", srcFiles, hasSize(1));
     }
 
     @Test
@@ -54,11 +57,10 @@ public class SourceUtilTest {
     }
 
 
-
-    private JavaSrcFile getTestResource(String name) throws ParseException, IOException {
+    static JavaSrcFile getTestResource(String name) throws ParseException, IOException {
         File file = new File(TEST_SRC_ROOT.getAbsolutePath() + separator + name);
-        assertTrue(file.exists(), "File not exists: "+ file.getPath());
-        assertTrue(file.isFile(), "Entity isn't a file: "+ file.getPath());
+        assertTrue(file.exists(), "File not exists: " + file.getPath());
+        assertTrue(file.isFile(), "Entity isn't a file: " + file.getPath());
 
         // Create a new source file and parse it
         return new JavaSrcFile(file, JavaParser.parse(file));
@@ -70,13 +72,13 @@ public class SourceUtilTest {
         assertTrue(srcFile.hasIgovLogger(), "Logger should be present in that file");
 
         List<BlockStmt> methods = srcFile.getBlockStatements();
-        assertEquals(methods.size(), 3, "There is 3 methods in the .java class");
+        assertThat("There are 3 methods in the .java class", methods, hasSize(3));
 
         List<BlockStmt> methodsWithIgovLogger = methods.stream()
-            .filter (SourceUtil::logCallPresent)
-            .collect(toList());
+                .filter(SourceUtil::logCallPresent)
+                .collect(toList());
 
-        assertEquals(methodsWithIgovLogger.size(), 1, "There is 1 method with igov log");
+        assertThat("There is 1 method with igov log", methodsWithIgovLogger, hasSize(1));
     }
 
     @Test(dataProvider = "logs for call search")
@@ -86,43 +88,43 @@ public class SourceUtilTest {
 
     @DataProvider(name = "logs for call search")
     public Object[][] produce() {
-        return new Object[][] {
-            { true , "public void containsLog() {\n" +
+        return new Object[][]{
+                {true, "public void containsLog() {\n" +
                         "  int id = 33358;\n" +
                         "  String name = \"someName\";\n" +
                         "  log.info(\"Got name={}, id={} \", name, id);\n" +
-                        "}" },
+                        "}"},
 
-            { false , "public void notContainsAnyLog() {\n" +
+                {false, "public void notContainsAnyLog() {\n" +
                         "  System.out.println(\"Sorry, but I don't contain any logger:)\");\n" +
-                        "}" },
+                        "}"},
 
-            { true , "public void withBigLogger() {\n" +
+                {true, "public void withBigLogger() {\n" +
                         "  int id = 33358;\n" +
                         "  String name = \"someName\";\n" +
                         "  LOG.trace(\"Got name={}, id={} \", name, id);\n" +
-                        "}" },
+                        "}"},
 
-            { true ,  "public void withSmallLongLogger() {\n" +
+                {true, "public void withSmallLongLogger() {\n" +
                         "  int id = 33358;\n" +
                         "  String name = \"someName\";\n" +
                         "  logger.error(\"\\ncontext info one two three: {} {} {}\", " +
                         "new Object[] {\"1\", \"2\", \"3\"}," +
                         "new Exception(\"something went wrong\"));\n" +
-                        "}" }};
+                        "}"}};
     }
 
     @Test
     public void annotationFoundInSourceCodeTest() {
-        assertTrue (annotationFoundInSourceCode(parse(TEST_SRC_ROOT+"/skip/TestSourceWithAnno.java")));
-        assertFalse(annotationFoundInSourceCode(parse(TEST_SRC_ROOT+"/skip/SourceWithoutAnno.java")));
+        assertTrue(annotationFoundInSourceCode(parse(TEST_SRC_ROOT + "/skip/TestSourceWithAnno.java")));
+        assertFalse(annotationFoundInSourceCode(parse(TEST_SRC_ROOT + "/skip/SourceWithoutAnno.java")));
     }
 
-    CompilationUnit parse(String path){
+    static CompilationUnit parse(String path) {
         try {
             return JavaParser.parse(new File(path));
-        } catch (IOException|ParseException e) {
-            throw new ShitHappensException("Unable to parse a file: "+path, e);
+        } catch (IOException | ParseException e) {
+            throw new AssertionError("Unable to parse a file: " + path, e);
         }
     }
 
@@ -143,19 +145,11 @@ public class SourceUtilTest {
     }
 
     @Test
-    public void isCallPresent(){
-        assertTrue  (SourceUtil.isCallPresent("log.     warn(\"the id is {}\", id);"));
-        assertTrue  (SourceUtil.isCallPresent("LOG.     debug(\"the id is {}\", id);"));
-        assertTrue  (SourceUtil.isCallPresent("logger.  info(\"the id is {}\", id);"));
-        assertTrue  (SourceUtil.isCallPresent("LOGGER.  trace(\"the id is {}\", id);"));
-        assertFalse (SourceUtil.isCallPresent("lg. warn(\"the id is {}\", id);"));
-    }
-}
-
-
-/** When something goes wrong */
-class ShitHappensException extends RuntimeException {
-    public ShitHappensException(String msg, Exception e) {
-        super(msg, e);
+    public void isCallPresent() {
+        assertTrue(SourceUtil.isCallPresent("log.     warn(\"the id is {}\", id);"));
+        assertTrue(SourceUtil.isCallPresent("LOG.     debug(\"the id is {}\", id);"));
+        assertTrue(SourceUtil.isCallPresent("logger.  info(\"the id is {}\", id);"));
+        assertTrue(SourceUtil.isCallPresent("LOGGER.  trace(\"the id is {}\", id);"));
+        assertFalse(SourceUtil.isCallPresent("lg. warn(\"the id is {}\", id);"));
     }
 }
