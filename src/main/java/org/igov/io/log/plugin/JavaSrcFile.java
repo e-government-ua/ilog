@@ -16,6 +16,7 @@ import java.util.List;
  * @since   26.03.16
  */
 class JavaSrcFile {
+
     private File file;
     private CompilationUnit compUnit;
 
@@ -40,7 +41,7 @@ class JavaSrcFile {
 
 
     public String toString() {
-        return "Java source file. Path " + file.getPath();
+        return file.getPath();
     }
 
 

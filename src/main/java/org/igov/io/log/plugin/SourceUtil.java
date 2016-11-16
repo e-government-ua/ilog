@@ -4,6 +4,8 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugin.logging.SystemStreamLog;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -21,12 +23,13 @@ import static org.apache.commons.lang3.Validate.notNull;
 
 class SourceUtil {
 
+    private static final Log LOG = new SystemStreamLog();
     private static final String LOG_CALL_REGEXP =
             ".*(LOG|LOGGER|log|logger)\\s*\\.\\s*(debug|info|error|trace|warn)\\s*\\(.*\".*\".*\\)\\;.*\n?";
 
     static final Pattern LOG_CALL_PATTERN = Pattern.compile(LOG_CALL_REGEXP);
 
-    private static final String PLUGIN_PACKAGE = "org.igov.io.log.plugin";
+    private static final String LOG_PACKAGE = "org.igov.io.log";
 
 
     static JavaSrcFile toSourceFile(File file, String encoding) {
@@ -48,11 +51,34 @@ class SourceUtil {
         notNull(root, "Root directory can't be a null");
         notBlank(encoding, "Encoding should be isn't blank");
 
-        return listFiles(root, new String[]{"java"}, true)
-                .stream()
+        Collection<File> originalSrcFiles = listFiles(root, new String[]{"java"}, true);
+        LOG.debug("  Found "+originalSrcFiles.size() + " files");
+        originalSrcFiles.forEach(file -> LOG.debug("   "+file));
+
+        List<JavaSrcFile> parsedSrcFiles = originalSrcFiles.stream()
                 .map(file -> toSourceFile(file, encoding))
-                .filter(src -> !startsWith(src.getCompUnit().getPackage().getName().toString(), PLUGIN_PACKAGE))
                 .collect(toList());
+        LOG.debug("  Parsed "+parsedSrcFiles.size()+" files");
+
+        return parsedSrcFiles.stream()
+                .filter(SourceUtil::leaveClassIfHisPackageDoesNotRelateToPluginPackage)
+                .collect(toList());
+    }
+
+    /**
+     * @return true if class doesn't relate to igov log plugin classes
+     **/
+    @SuppressWarnings({"PMD.AvoidCatchingNPE", "PMD.AvoidCatchingGenericException"})
+    private static boolean leaveClassIfHisPackageDoesNotRelateToPluginPackage(JavaSrcFile src) {
+        try {
+            boolean leaveClass = startsWith(src.getCompUnit().getPackage().getName().toString(), LOG_PACKAGE);
+            if (leaveClass)
+                LOG.debug("   skip " + src);
+            return !leaveClass;
+        } catch (NullPointerException npe){
+            LOG.warn("Unable to proceed "+src, npe);
+            return true;
+        }
     }
 
 
@@ -60,6 +86,7 @@ class SourceUtil {
         return loadSources(root, encoding)
                 .stream()
                 .filter(JavaSrcFile::hasIgovLogger)
+                .peek(file -> LOG.debug("  ready "+file))
                 .collect(toList());
     }
 

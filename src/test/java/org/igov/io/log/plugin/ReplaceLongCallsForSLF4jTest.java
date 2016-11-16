@@ -19,13 +19,13 @@ import static org.testng.Assert.assertTrue;
 public class ReplaceLongCallsForSLF4jTest {
     static final File TEST_SRC_ROOT = new File("src/test/resources/org/igov/src");
 
-    @Test
+    @Test//(enabled = false)
     public void replaceLongCalls() throws MojoExecutionException, MojoFailureException {
         assertTrue(TEST_SRC_ROOT.exists(), "Source root directory doesn't exists");
         assertTrue(TEST_SRC_ROOT.isDirectory(), "Source root file isn't a directory");
 
         ReplaceLongCallsForSLF4j mvnPlugin = new ReplaceLongCallsForSLF4j();
-        mvnPlugin.setRoot(TEST_SRC_ROOT);
+        mvnPlugin.setSourcesPath(TEST_SRC_ROOT.getPath());
         mvnPlugin.setEncoding("UTF-8");
         mvnPlugin.execute();
 
