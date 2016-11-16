@@ -61,7 +61,7 @@ class SourceUtil {
         LOG.debug("  Parsed "+parsedSrcFiles.size()+" files");
 
         return parsedSrcFiles.stream()
-                .filter(SourceUtil::leaveClassIfHisPackageDoesNotRelateToPluginPackage)
+                .filter(SourceUtil::leaveClassIfHisPackageDoesNotFromPluginPackage)
                 .collect(toList());
     }
 
@@ -69,15 +69,15 @@ class SourceUtil {
      * @return true if class doesn't relate to igov log plugin classes
      **/
     @SuppressWarnings({"PMD.AvoidCatchingNPE", "PMD.AvoidCatchingGenericException"})
-    private static boolean leaveClassIfHisPackageDoesNotRelateToPluginPackage(JavaSrcFile src) {
+    private static boolean leaveClassIfHisPackageDoesNotFromPluginPackage(JavaSrcFile src) {
         try {
-            boolean leaveClass = startsWith(src.getCompUnit().getPackage().getName().toString(), LOG_PACKAGE);
-            if (leaveClass)
+            boolean leave = startsWith(src.getCompUnit().getPackage().getName().toString(), LOG_PACKAGE);
+            if (leave)
                 LOG.debug("   skip " + src);
-            return !leaveClass;
+            return !leave;
         } catch (NullPointerException npe){
             LOG.warn("Unable to proceed "+src, npe);
-            return true;
+            return false;
         }
     }
 

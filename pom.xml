@@ -24,6 +24,7 @@
         <testng.version>6.9.10</testng.version>
         <jacoco.version>0.7.6.201602180812</jacoco.version>
         <coveralls.version>4.1.0</coveralls.version>
+        <coveralls.coverage>0.80</coveralls.coverage>
     </properties>
 
     <dependencies>
@@ -148,7 +149,7 @@
                                     <limit implementation="org.jacoco.report.check.Limit">
                                         <counter>INSTRUCTION</counter>
                                         <value>COVEREDRATIO</value>
-                                        <minimum>0.80</minimum>
+                                        <minimum>${coveralls.coverage}</minimum>
                                     </limit>
                                 </limits>
                             </rule>
