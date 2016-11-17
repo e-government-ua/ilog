@@ -26,6 +26,19 @@
         <coveralls.version>4.1.0</coveralls.version>
         <coveralls.coverage>0.80</coveralls.coverage>
     </properties>
+    
+    <distributionManagement>
+        <repository>
+            <id>eGovUa_Nexus</id>
+            <name>Internal Releases</name>
+            <url>https://nexus.igov.org.ua/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>eGovUa_Nexus</id>
+            <name>Internal Snapshots</name>
+            <url>https://nexus.igov.org.ua/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
