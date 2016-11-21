@@ -11,7 +11,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toList;
@@ -27,12 +29,13 @@ class SourceUtil {
     private static final String LOG_CALL_REGEXP =
             ".*(LOG|LOGGER|log|logger)\\s*\\.\\s*(debug|info|error|trace|warn)\\s*\\(.*\".*\".*\\)\\;.*\n?";
 
-    static final Pattern LOG_CALL_PATTERN = Pattern.compile(LOG_CALL_REGEXP);
+    private static final Pattern LOG_CALL_PATTERN = Pattern.compile(LOG_CALL_REGEXP);
+    private static final Pattern LOG_CALL_REPLACE_PATTERN = Pattern.compile("\",.*.\\);$");
 
     private static final String LOG_PACKAGE = "org.igov.io.log";
 
 
-    static JavaSrcFile toSourceFile(File file, String encoding) {
+    private static JavaSrcFile toSourceFile(File file, String encoding) {
         try {
             return new JavaSrcFile(file, JavaParser.parse(file, encoding));
         } catch (ParseException | IOException e) {
@@ -128,37 +131,14 @@ class SourceUtil {
         return LOG_CALL_PATTERN.matcher(line).find();
     }
 
-    // fucking hell! TODO clean it or replace via regexp replace
+    // fucking hell! TODO clean it
     static String replaceCall(String code) {
-        StringTokenizer tokenizer = new StringTokenizer(code, ",");
-        String result = "";
-        List<String> varList = new ArrayList<>();
-
-        String temp = tokenizer.nextToken();
-        result += (temp.substring(0, temp.length() - 1));
-
-        if (tokenizer.countTokens() == 0) {
-            return result + ";\n";
+        Matcher matcher = LOG_CALL_REPLACE_PATTERN.matcher(code);
+        if (matcher.find()) {
+            String tmp = " " + matcher.group(0).substring(3).replaceAll("\\);$", "").replaceAll(",", "={},") + "={}\",";
+            return code.replace("\",", tmp) + "\n";
+        } else {
+            return code;
         }
-
-        while (tokenizer.hasMoreTokens()) {
-            varList.add(tokenizer.nextToken());
-        }
-        temp = varList.remove(varList.size() - 1);
-        varList.add(temp.substring(0, temp.length() - 2));
-
-        Iterator<String> iterator = varList.iterator();
-        while (iterator.hasNext()) {
-            result += iterator.next() + "={},";
-        }
-        result = result.substring(0, result.length() - 1) + "\",";
-
-        iterator = varList.iterator();
-        while (iterator.hasNext()) {
-            result += iterator.next() + ",";
-        }
-        result = result.substring(0, result.length() - 1) + ");\n";
-
-        return result;
     }
 }
