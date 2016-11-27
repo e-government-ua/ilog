@@ -141,7 +141,25 @@ public class SourceUtilTest {
                 {"log.debug(\"Got  name={}, id={}\", name, id);\n", "log.debug(\"Got \", name, id);"},
                 {"log.info (\"Got  name={}, id={}\", name, id);\n", "log.info (\"Got \", name, id);"},
                 {"log.warn (\"Got  name={}, id={}\", name, id);\n", "log.warn (\"Got \", name, id);"},
-                {"log.warn (\"Got  name={}\", name);\n", "log.warn (\"Got \", name);"}};
+                {"log.warn (\"Got  name={}\", name);\n", "log.warn (\"Got \", name);"},
+
+                {
+                        "log.info (\"Got \"John smith\"  name={}, id={}\", name, id);\n",
+                        "log.info (\"Got \"John smith\" \", name, id);"
+                },
+                {
+                        "log.info (\"Got \"John smith\",  name={}, id={}\", name, id);\n",
+                        "log.info (\"Got \"John smith\", \", name, id);"
+                },
+                {
+                        "log.info (\"Got  name={}, 253={}\", name, 253);\n",
+                        "log.info (\"Got \", name, 253);"
+                },
+                {
+                        "log.warn (\"Got  new Date()={}, id={}\", new Date(), id);\n",
+                        "log.warn (\"Got \", new Date(), id);"
+                }
+        };
     }
 
     @Test

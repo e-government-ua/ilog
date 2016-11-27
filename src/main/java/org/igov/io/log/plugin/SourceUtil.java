@@ -131,12 +131,12 @@ class SourceUtil {
         return LOG_CALL_PATTERN.matcher(line).find();
     }
 
-    // fucking hell! TODO clean it
     static String replaceCall(String code) {
         Matcher matcher = LOG_CALL_REPLACE_PATTERN.matcher(code);
         if (matcher.find()) {
             String tmp = " " + matcher.group(0).substring(3).replaceAll("\\);$", "").replaceAll(",", "={},") + "={}\",";
-            return code.replace("\",", tmp) + "\n";
+            int pos = code.lastIndexOf("\",");
+            return new StringBuffer(code).replace(pos, pos + 2, tmp.replace(" \"={},", "")).toString() + "\n";
         } else {
             return code;
         }
