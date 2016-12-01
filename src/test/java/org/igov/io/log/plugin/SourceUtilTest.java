@@ -158,6 +158,13 @@ public class SourceUtilTest {
                 {
                         "log.warn (\"Got  new Date()={}, id={}\", new Date(), id);\n",
                         "log.warn (\"Got \", new Date(), id);"
+                },
+
+                {"log.warn (\"Got name={}, id={}\", name, id);\n", "log.warn (\"Got name={}\", name, id);"},
+                {"log.warn (\"Got  name={}, id={}\", name, id);\n", "log.warn (\"Got  name={}, id={}\", name, id);"},
+                {
+                        "LOG.info(\"   sContent={}\", sContent);\n",
+                        "LOG.info(\"   sContent={}\", sContent);\n"
                 }
         };
     }

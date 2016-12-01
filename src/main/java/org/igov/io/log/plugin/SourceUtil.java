@@ -34,6 +34,7 @@ class SourceUtil {
 
     private static final String LOG_PACKAGE = "org.igov.io.log";
 
+    private static final String END_OF_STRING = "\",";
 
     private static JavaSrcFile toSourceFile(File file, String encoding) {
         try {
@@ -134,9 +135,21 @@ class SourceUtil {
     static String replaceCall(String code) {
         Matcher matcher = LOG_CALL_REPLACE_PATTERN.matcher(code);
         if (matcher.find()) {
-            String tmp = " " + matcher.group(0).substring(3).replaceAll("\\);$", "").replaceAll(",", "={},") + "={}\",";
-            int pos = code.lastIndexOf("\",");
-            return new StringBuffer(code).replace(pos, pos + 2, tmp.replace(" \"={},", "")).toString() + "\n";
+            String tmp = (" " + matcher.group(0).substring(3).replaceAll("\\);$", "").replaceAll(",", "={},")).replace(" \"={},", "") + "={}\",";
+            for (String item: tmp.split(", ")) {
+                String str = item.trim().replace(END_OF_STRING, "");
+                if (!str.isEmpty() && code.contains(str)) {
+                    tmp = tmp.replace(str, " ");
+                }
+            }
+            int pos = code.lastIndexOf(END_OF_STRING);
+            return new StringBuffer(code)
+                    .replace(pos, pos + 2, tmp.replaceAll(" , ", ", "))
+                    .toString().replace(" , ", ", ")
+                    .replaceAll(",   ", "\", ")
+                    .replaceAll("  \",", END_OF_STRING)
+                    .replaceAll("\n", "")
+                    .replaceAll(",\",", END_OF_STRING) + "\n" ;
         } else {
             return code;
         }
